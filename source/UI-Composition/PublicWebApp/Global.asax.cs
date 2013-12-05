@@ -18,6 +18,9 @@ namespace PublicWebApp
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             VesselConfig.RegisterContainer();
+
+            ViewEngines.Engines.Clear();
+            ViewEngines.Engines.Add(new AlternateViewEngine());
         }
     }
 }

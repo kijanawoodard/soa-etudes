@@ -116,16 +116,17 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
+    <Folder Include="Controllers\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Features\ShowMailingLabel\Code.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\AlternateViewEngine.cs" />
     <Compile Include="Infrastructure\Liaison.cs" />
     <Compile Include="Infrastructure\RavenModule.cs" />
     <Compile Include="Infrastructure\Vessel.cs" />
@@ -155,11 +156,11 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Views\Web.config" />
-    <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Features\Web.config" />
+    <Content Include="Features\_ViewStart.cshtml" />
+    <Content Include="Features\Shared\Error.cshtml" />
+    <Content Include="Features\Shared\_Layout.cshtml" />
+    <Content Include="Features\ShowMailingLabel\Index.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup />
