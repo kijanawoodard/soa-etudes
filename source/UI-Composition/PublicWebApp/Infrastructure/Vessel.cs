@@ -28,7 +28,7 @@ namespace PublicWebApp.Infrastructure
     public class Vessel : IResolver, IRegistrar, IContainer
     {
         private delegate object Resolver(IResolver resolver);
-        private readonly IDictionary<int, Resolver> _registrations;
+        private readonly IDictionary<Type, Resolver> _registrations;
 
         public void Register<T>(T service)
         {
@@ -42,7 +42,7 @@ namespace PublicWebApp.Infrastructure
 
         void Register(Type type, Resolver resolver)
         {
-            _registrations.Add(type.GetHashCode(), resolver);
+            _registrations.Add(type, resolver);
         }
 
         public void RegisterModules()
@@ -68,13 +68,13 @@ namespace PublicWebApp.Infrastructure
         public object Resolve(Type service)
         {
             Resolver resolver;
-            var ok = _registrations.TryGetValue(service.GetHashCode(), out resolver);
+            var ok = _registrations.TryGetValue(service, out resolver);
             return ok ? resolver(this) : null;
         }
 
         public Vessel()
         {
-            _registrations = new Dictionary<int, Resolver>();
+            _registrations = new Dictionary<Type, Resolver>();
         }
     }
 
