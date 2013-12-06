@@ -116,10 +116,13 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Compile Include="Features\ShowMailingLabel\Module.cs" />
+    <Compile Include="Features\ShowMailingLabel\Sales\RequestHandler.cs" />
+    <Compile Include="Features\ShowMailingLabel\Shipping\RequestHandler.cs" />
+    <Compile Include="Features\ShowMailingLabel\Controller.cs" />
     <Compile Include="Infrastructure\BundleConfig.cs" />
     <Compile Include="Infrastructure\FilterConfig.cs" />
     <Compile Include="Infrastructure\RouteConfig.cs" />
-    <Compile Include="Features\ShowMailingLabel\Code.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
