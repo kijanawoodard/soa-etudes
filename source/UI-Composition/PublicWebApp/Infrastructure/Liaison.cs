@@ -1,58 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PublicWebApp.Infrastructure
 {
     public interface ISubscribeHandlers
     {
-        void Subscribe<TMessage>(Action<TMessage> handler);
-        void Subscribe<TMessage, TResult>(Func<TMessage, TResult> handler);
+        void Subscribe<TMessage>(Func<TMessage, Task> handler);
+        void Subscribe<TMessage, TResult>(Func<TMessage, Task<TResult>> handler);
     }
 
     public interface IMediator
     {
-        void Send<TMessage>(TMessage message);
-        TResult Send<TMessage, TResult>(TMessage message);
+        Task Send<TMessage>(TMessage message);
+        Task<TResult> Send<TMessage, TResult>(TMessage message);
     }
 
     public class Mediator : ISubscribeHandlers, IMediator
     {
-        private readonly IDictionary<int, Delegate> _subscriptions;
+        private readonly IDictionary<Type, Delegate> _subscriptions;
 
-        public void Subscribe<TMessage>(Action<TMessage> handler)
+        public void Subscribe<TMessage>(Func<TMessage, Task> handler)
         {
-            Subscribe<TMessage, Unit>(message =>
+            Subscribe<TMessage, Task>(async message =>
             {
-                handler(message);
-                return new Unit();
+                await handler(message);
+                return new TaskCompletionSource<Unit>().Task;
             });
         }
 
-        public void Subscribe<TMessage, TResult>(Func<TMessage, TResult> handler)
+        public void Subscribe<TMessage, TResult>(Func<TMessage, Task<TResult>> handler)
         {
-            _subscriptions.Add(typeof(TMessage).GetHashCode(), handler);
+            _subscriptions.Add(typeof(TMessage), handler);
         }
 
-        public void Send<TMessage>(TMessage message)
+        public async Task Send<TMessage>(TMessage message)
         {
-            Send<TMessage, Unit>(message);
+            await Send<TMessage, Unit>(message);
         }
 
-        public TResult Send<TMessage, TResult>(TMessage message)
+        public async Task<TResult> Send<TMessage, TResult>(TMessage message)
         {
             Delegate value;
-            if (!_subscriptions.TryGetValue(typeof(TMessage).GetHashCode(), out value))
+            if (!_subscriptions.TryGetValue(typeof(TMessage), out value))
                 throw new ApplicationException(string.Format("No Handler subscribed for message {0}.", typeof(TMessage).Name));
 
-            var handler = value as Func<TMessage, TResult>;
+            var handler = value as Func<TMessage, Task<TResult>>;
             if (handler == null) throw new ApplicationException(string.Format("The handler subscribed for {0} does not have result type of {1}.", typeof(TMessage).Name, typeof(TResult).Name));
 
-            return handler(message);
+            return await handler(message);
         }
 
         public Mediator()
         {
-            _subscriptions = new SortedDictionary<int, Delegate>();
+            _subscriptions = new SortedDictionary<Type, Delegate>();
         }
 
         class Unit { }

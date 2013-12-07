@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Threading.Tasks;
+using System.Web.Mvc;
 using PublicWebApp.Infrastructure;
 
 namespace Features.ShowMailingLabel
@@ -12,10 +13,10 @@ namespace Features.ShowMailingLabel
 			_mediator = mediator;
 		}
 
-		public ActionResult Index(ViewRequest request)
+		public async Task<ActionResult> Index(ViewRequest request)
 		{
 			request.CustomerId = "customers/1234"; //fake the id coming in on the request
-			var model = _mediator.Send<ViewRequest, ViewModel>(request);
+			var model = await _mediator.Send<ViewRequest, ViewModel>(request);
 			return View(model);
 		}
 	}

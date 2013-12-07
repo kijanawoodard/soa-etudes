@@ -1,4 +1,5 @@
-﻿using Raven.Client;
+﻿using System.Threading.Tasks;
+using Raven.Client;
 
 namespace Shipping
 {
@@ -11,11 +12,11 @@ namespace Shipping
 			_store = store;
 		}
 
-		public Features.ShowMailingLabel.ViewModel Handle(Features.ShowMailingLabel.ViewRequest request, Features.ShowMailingLabel.ViewModel result)
+		public async Task<Features.ShowMailingLabel.ViewModel> Handle(Features.ShowMailingLabel.ViewRequest request, Features.ShowMailingLabel.ViewModel result)
 		{
 			using (var session = OpenSession())
 			{
-				var customer = session.Load<Shipping.Customer>(request.CustomerId);
+				var customer = await session.LoadAsync<Shipping.Customer>(request.CustomerId);
 				result.Address = customer.ShippingAddress.Street;
 				result.CityStateZip = string.Format("{0}, {1} {2}", 
 					customer.ShippingAddress.City,
@@ -25,9 +26,9 @@ namespace Shipping
 			}
 		}
 
-		private IDocumentSession OpenSession()
+		private IAsyncDocumentSession OpenSession()
 		{
-			return _store.OpenSession("Shipping");
+			return _store.OpenAsyncSession("Shipping");
 		}
 	}
 

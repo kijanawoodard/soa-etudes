@@ -1,4 +1,6 @@
-﻿namespace Features.ShowMailingLabel
+﻿using System.Threading.Tasks;
+
+namespace Features.ShowMailingLabel
 {
 	using PublicWebApp.Infrastructure;
 	using Raven.Client;
@@ -11,12 +13,12 @@
 
 			var mediator = container.Resolve<ISubscribeHandlers>();
 			mediator.Subscribe<Features.ShowMailingLabel.ViewRequest, Features.ShowMailingLabel.ViewModel>
-				(request =>
+				(async request =>
 				{
 					var store = container.Resolve<IDocumentStore>();
 					var result = new Features.ShowMailingLabel.ViewModel();
-					result = new Sales.RequestHandler(store).Handle(request, result);
-					result = new Shipping.RequestHandler(store).Handle(request, result);
+					result = await new Sales.RequestHandler(store).Handle(request, result);
+					result = await new Shipping.RequestHandler(store).Handle(request, result);
 					return result;
 				});
 		}

@@ -1,4 +1,5 @@
-﻿using Raven.Client;
+﻿using System.Threading.Tasks;
+using Raven.Client;
 
 namespace Sales
 {
@@ -11,19 +12,19 @@ namespace Sales
 			_store = store;
 		}
 
-		public Features.ShowMailingLabel.ViewModel Handle(Features.ShowMailingLabel.ViewRequest request, Features.ShowMailingLabel.ViewModel result)
+		public async Task<Features.ShowMailingLabel.ViewModel> Handle(Features.ShowMailingLabel.ViewRequest request, Features.ShowMailingLabel.ViewModel result)
 		{
 			using (var session = OpenSession())
 			{
-				var customer = session.Load<Sales.Customer>(request.CustomerId);
+				var customer = await session.LoadAsync<Sales.Customer>(request.CustomerId);
                 result.Name = string.Format("{0} {1} {2}", customer.FirstName, customer.MiddleName, customer.LastName);
 				return result;
 			}
 		}
 
-		private IDocumentSession OpenSession()
+		private IAsyncDocumentSession OpenSession()
 		{
-			return _store.OpenSession("Sales");
+			return _store.OpenAsyncSession("Sales");
 		}
 	}
 
