@@ -16,7 +16,7 @@ namespace Sales
 			using (var session = OpenSession())
 			{
 				var customer = session.Load<Sales.Customer>(request.CustomerId);
-				result.Name = customer.Name;
+                result.Name = string.Format("{0} {1} {2}", customer.FirstName, customer.MiddleName, customer.LastName);
 				return result;
 			}
 		}
@@ -30,6 +30,8 @@ namespace Sales
 	public class Customer
 	{
 		public string Id { get; set; }
-		public string Name { get; set; }
+        public string FirstName { get; set; }
+        public string MiddleName { get; set; }
+        public string LastName { get; set; }
 	}
 }
