@@ -5,20 +5,17 @@ namespace Shipping
 {
 	public class RequestHandler
 	{
-		private readonly IDocumentStore _store;
+        private readonly IAsyncDocumentSession _session;
 	    private Customer _customer;
 
-	    public RequestHandler(IDocumentStore store)
-		{
-			_store = store;
-		}
+        public RequestHandler(IAsyncDocumentSession session)
+        {
+            _session = session;
+        }
 
 		public async Task Handle(Features.ShowMailingLabel.ViewRequest request)
 		{
-			using (var session = OpenSession())
-			{
-				_customer = await session.LoadAsync<Shipping.Customer>(request.CustomerId);
-			}
+			_customer = await _session.LoadAsync<Shipping.Customer>(request.CustomerId);
 		}
 
         public Features.ShowMailingLabel.ViewModel Handle(Features.ShowMailingLabel.ViewModel result)
@@ -30,11 +27,6 @@ namespace Shipping
                 _customer.ShippingAddress.Zip);
             return result;
         }
-
-		private IAsyncDocumentSession OpenSession()
-		{
-			return _store.OpenAsyncSession("Shipping");
-		}
 	}
 
 	public class Customer

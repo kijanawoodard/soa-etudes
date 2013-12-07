@@ -5,31 +5,23 @@ namespace Sales
 {
 	public class RequestHandler
 	{
-		private readonly IDocumentStore _store;
+        private readonly IAsyncDocumentSession _session;
 	    private Customer _customer;
 
-	    public RequestHandler(IDocumentStore store)
+        public RequestHandler(IAsyncDocumentSession session)
 		{
-			_store = store;
+			_session = session;
 		}
 
 		public async Task Handle(Features.ShowMailingLabel.ViewRequest request)
 		{
-			using (var session = OpenSession())
-			{
-			    _customer = await session.LoadAsync<Sales.Customer>(request.CustomerId);
-			}
+			_customer = await _session.LoadAsync<Sales.Customer>(request.CustomerId);
 		}
 
         public Features.ShowMailingLabel.ViewModel Handle(Features.ShowMailingLabel.ViewModel result)
 		{
             result.Name = string.Format("{0} {1} {2}", _customer.FirstName, _customer.MiddleName, _customer.LastName);
 			return result;
-		}
-
-		private IAsyncDocumentSession OpenSession()
-		{
-			return _store.OpenAsyncSession("Sales");
 		}
 	}
 
