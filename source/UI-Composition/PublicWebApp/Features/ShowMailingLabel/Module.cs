@@ -17,8 +17,13 @@ namespace Features.ShowMailingLabel
 				{
 					var store = container.Resolve<IDocumentStore>();
 					var result = new Features.ShowMailingLabel.ViewModel();
-					result = await new Sales.RequestHandler(store).Handle(request, result);
-					result = await new Shipping.RequestHandler(store).Handle(request, result);
+				    var sales = new Sales.RequestHandler(store);
+				    var shipping = new Shipping.RequestHandler(store);
+
+				    await Task.WhenAll(sales.Handle(request), shipping.Handle(request));
+                    
+					result = sales.Handle(result);
+					result = shipping.Handle(result);
 					return result;
 				});
 		}

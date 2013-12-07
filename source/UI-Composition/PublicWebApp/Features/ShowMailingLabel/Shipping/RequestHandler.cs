@@ -6,25 +6,30 @@ namespace Shipping
 	public class RequestHandler
 	{
 		private readonly IDocumentStore _store;
+	    private Customer _customer;
 
-		public RequestHandler(IDocumentStore store)
+	    public RequestHandler(IDocumentStore store)
 		{
 			_store = store;
 		}
 
-		public async Task<Features.ShowMailingLabel.ViewModel> Handle(Features.ShowMailingLabel.ViewRequest request, Features.ShowMailingLabel.ViewModel result)
+		public async Task Handle(Features.ShowMailingLabel.ViewRequest request)
 		{
 			using (var session = OpenSession())
 			{
-				var customer = await session.LoadAsync<Shipping.Customer>(request.CustomerId);
-				result.Address = customer.ShippingAddress.Street;
-				result.CityStateZip = string.Format("{0}, {1} {2}", 
-					customer.ShippingAddress.City,
-					customer.ShippingAddress.State,
-					customer.ShippingAddress.Zip);
-				return result;
+				_customer = await session.LoadAsync<Shipping.Customer>(request.CustomerId);
 			}
 		}
+
+        public Features.ShowMailingLabel.ViewModel Handle(Features.ShowMailingLabel.ViewModel result)
+        {
+            result.Address = _customer.ShippingAddress.Street;
+            result.CityStateZip = string.Format("{0}, {1} {2}",
+                _customer.ShippingAddress.City,
+                _customer.ShippingAddress.State,
+                _customer.ShippingAddress.Zip);
+            return result;
+        }
 
 		private IAsyncDocumentSession OpenSession()
 		{

@@ -6,20 +6,25 @@ namespace Sales
 	public class RequestHandler
 	{
 		private readonly IDocumentStore _store;
+	    private Customer _customer;
 
-		public RequestHandler(IDocumentStore store)
+	    public RequestHandler(IDocumentStore store)
 		{
 			_store = store;
 		}
 
-		public async Task<Features.ShowMailingLabel.ViewModel> Handle(Features.ShowMailingLabel.ViewRequest request, Features.ShowMailingLabel.ViewModel result)
+		public async Task Handle(Features.ShowMailingLabel.ViewRequest request)
 		{
 			using (var session = OpenSession())
 			{
-				var customer = await session.LoadAsync<Sales.Customer>(request.CustomerId);
-                result.Name = string.Format("{0} {1} {2}", customer.FirstName, customer.MiddleName, customer.LastName);
-				return result;
+			    _customer = await session.LoadAsync<Sales.Customer>(request.CustomerId);
 			}
+		}
+
+        public Features.ShowMailingLabel.ViewModel Handle(Features.ShowMailingLabel.ViewModel result)
+		{
+            result.Name = string.Format("{0} {1} {2}", _customer.FirstName, _customer.MiddleName, _customer.LastName);
+			return result;
 		}
 
 		private IAsyncDocumentSession OpenSession()
