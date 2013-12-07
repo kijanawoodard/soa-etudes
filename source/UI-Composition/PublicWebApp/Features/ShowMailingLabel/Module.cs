@@ -12,13 +12,13 @@ namespace Features.ShowMailingLabel
 			container.Register(c => new ShowMailingLabelController(c.Resolve<IMediator>()));
 
 			var mediator = container.Resolve<ISubscribeHandlers>();
-			mediator.Subscribe<Features.ShowMailingLabel.ViewRequest, Features.ShowMailingLabel.ViewModel>(async request => await Execute(container, request));
+            mediator.Subscribe<Features.ShowMailingLabel.ViewRequest, Features.ShowMailingLabel.ViewModel>(async request => await Execute(request, container.Resolve<Sales.RavenDb>(), container.Resolve<Shipping.RavenDb>()));
 		}
 
-	    private static async Task<ViewModel> Execute(IResolver container, ViewRequest request)
+	    private static async Task<ViewModel> Execute(ViewRequest request, Sales.RavenDb salesDb, Shipping.RavenDb shippingDb)
 	    {
-	        using (var salesSession = container.Resolve<Sales.RavenDb>().OpenAsyncSession())
-            using (var shippingSession = container.Resolve<Shipping.RavenDb>().OpenAsyncSession())
+	        using (var salesSession = salesDb.OpenAsyncSession())
+            using (var shippingSession = shippingDb.OpenAsyncSession())
 	        {
                 var sales = new Sales.RequestHandler(salesSession);
                 var shipping = new Shipping.RequestHandler(shippingSession);
